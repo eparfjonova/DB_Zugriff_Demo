@@ -10,6 +10,9 @@ public class Main {
 
         selectAllDemo();
 
+        insertStudentDemo();
+        selectAllDemo();
+
 
         //Code von Dienstag wo ich nicht da war
 
@@ -57,6 +60,42 @@ public class Main {
                 System.out.println("Fehler beim Aufbau der Verbindung zur DB: " + e.getMessage());
             }
         }
+
+        //Video 5.
+    public static void insertStudentDemo(){
+
+
+        System.out.println("Insert DEMO mit JDBC");
+        String sqlSelectAllPerson = "SELECT * FROM `student`";
+        String connectionUrl = "jdbc:mysql://127.0.0.1:3306/jdbcdemo";
+
+        //Username und Passwort um die Verbindung aufzubauen
+        String user = "root";
+        String pwd = "";
+
+        //versucht die Verbindung aufzustellen
+        try(Connection conn = DriverManager.getConnection(connectionUrl, user, pwd)){
+
+            PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO `student` (`id`, `name`, `email`) VALUES (Null, ?, ?)");
+
+            //noch ein Try Catch Block um zu unterscheiden ob es beim absetzen vom SQL Code nicht schon ein Problem gegeben hat
+            try{
+                //SQL Injection (werden mit dieser Methide als Strings und nicht als SQL angeshen)
+                preparedStatement.setString(1, "Peter Zeck");
+                preparedStatement.setString(2, "p.zeck@hotmail.com");
+                //liefert die Anzahl der betroffenen Datensätze zurück
+                int rowAffected = preparedStatement.executeUpdate();
+                System.out.println(rowAffected + " Datensätze eingefügt");
+            }catch(SQLException ex){
+                System.out.println("Fehler im SQL-Insert Statement: " + ex.getMessage());
+            }
+
+        }catch(SQLException e){
+            System.out.println("Fehler beim Aufbau der Verbindung zur DB: " + e.getMessage());
+        }
+
+
+    }
 
 
 
