@@ -10,10 +10,13 @@ public class Main {
 
         selectAllDemo();
 
-        insertStudentDemo();
+        insertStudentDemo("Name", "email@gmail.com");
         selectAllDemo();
 
-        updateStudentDemo();
+        updateStudentDemo(6,"Susi Müller", "susi.mueller@gmail.com");
+        selectAllDemo();
+
+        deleteStudentDemo(9);
         selectAllDemo();
 
 
@@ -65,7 +68,7 @@ public class Main {
         }
 
         //Video 5. Daten einfügen
-    public static void insertStudentDemo(){
+    public static void insertStudentDemo(String neuerName, String neueEmail){
 
 
         System.out.println("Insert DEMO mit JDBC");
@@ -85,8 +88,8 @@ public class Main {
             //noch ein Try Catch Block um zu unterscheiden ob es beim absetzen vom SQL Code nicht schon ein Problem gegeben hat
             try{
                 //SQL Injection (werden mit dieser Methide als Strings und nicht als SQL angeshen)
-                preparedStatement.setString(1, "Peter Zeck");
-                preparedStatement.setString(2, "p.zeck@hotmail.com");
+                preparedStatement.setString(1, neuerName);
+                preparedStatement.setString(2, neueEmail);
                 //liefert die Anzahl der betroffenen Datensätze zurück
                 int rowAffected = preparedStatement.executeUpdate();
                 System.out.println(rowAffected + " Datensätze eingefügt");
@@ -103,7 +106,7 @@ public class Main {
 
     //Video 6. Daten Aktualisieren
 
-    public static void updateStudentDemo(){
+    public static void updateStudentDemo(int ID, String neuerName, String neueEmail){
 
 
         System.out.println("UPDATE DEMO mit JDBC");
@@ -118,18 +121,55 @@ public class Main {
         //die Connection wird wegendem try catch block automatisch geschlossen deswegen muss man das nicht manuel machen
         try(Connection conn = DriverManager.getConnection(connectionUrl, user, pwd)){
 
-            PreparedStatement preparedStatement = conn.prepareStatement("UPDATE `student` SET `name` = ?, `email` =? WHERE `student`.`id`=4");
+            PreparedStatement preparedStatement = conn.prepareStatement("UPDATE `student` SET `name` = ?, `email` =? WHERE `student`.`id`=?");
 
             //noch ein Try Catch Block um zu unterscheiden ob es beim absetzen vom SQL Code nicht schon ein Problem gegeben hat
             try{
                 //SQL Injection (werden mit dieser Methide als Strings und nicht als SQL angeshen)
-                preparedStatement.setString(1, "Hans Zimmer");
-                preparedStatement.setString(2, "h.zimmer@trx.com");
+                preparedStatement.setString(1, neuerName);
+                preparedStatement.setString(2, neueEmail);
+                preparedStatement.setInt(3, ID);
                 //liefert die Anzahl der betroffenen Datensätze zurück
                 int rowAffected = preparedStatement.executeUpdate();
                 System.out.println(rowAffected + " Datensätze aktuallisiert Anzahl");
             }catch(SQLException ex){
                 System.out.println("Fehler im SQL-Update Statement: " + ex.getMessage());
+            }
+
+        }catch(SQLException e){
+            System.out.println("Fehler beim Aufbau der Verbindung zur DB: " + e.getMessage());
+        }
+
+
+    }
+
+    //Video 7. Datensätze löschen
+
+    public static void deleteStudentDemo(int studentId){
+
+
+        System.out.println("DELETE DEMO mit JDBC");
+        String sqlSelectAllPerson = "SELECT * FROM `student`";
+        String connectionUrl = "jdbc:mysql://127.0.0.1:3306/jdbcdemo";
+
+        //Username und Passwort um die Verbindung aufzubauen
+        String user = "root";
+        String pwd = "";
+
+        //versucht die Verbindung aufzustellen
+        //die Connection wird wegendem try catch block automatisch geschlossen deswegen muss man das nicht manuel machen
+        try(Connection conn = DriverManager.getConnection(connectionUrl, user, pwd)){
+
+            PreparedStatement preparedStatement = conn.prepareStatement("DELETE FROM `student` WHERE `student`.`id`=?");
+
+            //noch ein Try Catch Block um zu unterscheiden ob es beim absetzen vom SQL Code nicht schon ein Problem gegeben hat
+            try{
+                preparedStatement.setInt(1, studentId);
+                //liefert die Anzahl der betroffenen Datensätze zurück
+                int rowAffected = preparedStatement.executeUpdate();
+                System.out.println(rowAffected + " Datensätze gelöscht");
+            }catch(SQLException ex){
+                System.out.println("Fehler im SQL-DELETE Statement: " + ex.getMessage());
             }
 
         }catch(SQLException e){
