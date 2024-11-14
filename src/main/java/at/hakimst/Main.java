@@ -13,6 +13,9 @@ public class Main {
         insertStudentDemo();
         selectAllDemo();
 
+        updateStudentDemo();
+        selectAllDemo();
+
 
         //Code von Dienstag wo ich nicht da war
 
@@ -61,7 +64,7 @@ public class Main {
             }
         }
 
-        //Video 5.
+        //Video 5. Daten einfügen
     public static void insertStudentDemo(){
 
 
@@ -74,6 +77,7 @@ public class Main {
         String pwd = "";
 
         //versucht die Verbindung aufzustellen
+        //die Connection wird wegendem try catch block automatisch geschlossen deswegen muss man das nicht manuel machen
         try(Connection conn = DriverManager.getConnection(connectionUrl, user, pwd)){
 
             PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO `student` (`id`, `name`, `email`) VALUES (Null, ?, ?)");
@@ -88,6 +92,44 @@ public class Main {
                 System.out.println(rowAffected + " Datensätze eingefügt");
             }catch(SQLException ex){
                 System.out.println("Fehler im SQL-Insert Statement: " + ex.getMessage());
+            }
+
+        }catch(SQLException e){
+            System.out.println("Fehler beim Aufbau der Verbindung zur DB: " + e.getMessage());
+        }
+
+
+    }
+
+    //Video 6. Daten Aktualisieren
+
+    public static void updateStudentDemo(){
+
+
+        System.out.println("UPDATE DEMO mit JDBC");
+        String sqlSelectAllPerson = "SELECT * FROM `student`";
+        String connectionUrl = "jdbc:mysql://127.0.0.1:3306/jdbcdemo";
+
+        //Username und Passwort um die Verbindung aufzubauen
+        String user = "root";
+        String pwd = "";
+
+        //versucht die Verbindung aufzustellen
+        //die Connection wird wegendem try catch block automatisch geschlossen deswegen muss man das nicht manuel machen
+        try(Connection conn = DriverManager.getConnection(connectionUrl, user, pwd)){
+
+            PreparedStatement preparedStatement = conn.prepareStatement("UPDATE `student` SET `name` = ?, `email` =? WHERE `student`.`id`=4");
+
+            //noch ein Try Catch Block um zu unterscheiden ob es beim absetzen vom SQL Code nicht schon ein Problem gegeben hat
+            try{
+                //SQL Injection (werden mit dieser Methide als Strings und nicht als SQL angeshen)
+                preparedStatement.setString(1, "Hans Zimmer");
+                preparedStatement.setString(2, "h.zimmer@trx.com");
+                //liefert die Anzahl der betroffenen Datensätze zurück
+                int rowAffected = preparedStatement.executeUpdate();
+                System.out.println(rowAffected + " Datensätze aktuallisiert Anzahl");
+            }catch(SQLException ex){
+                System.out.println("Fehler im SQL-Update Statement: " + ex.getMessage());
             }
 
         }catch(SQLException e){
